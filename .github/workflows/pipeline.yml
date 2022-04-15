@@ -44,13 +44,13 @@ jobs:
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
   tag_release:
-    needs: [heroku]
+    needs: [heroku, simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     if: ${{ github.event_name == 'push' }}
     steps:
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
           DEFAULT_BUMP: patch
           DRY_RUN: true
