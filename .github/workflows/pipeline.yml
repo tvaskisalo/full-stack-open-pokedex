@@ -48,11 +48,11 @@ jobs:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
       - name: parse commit messages
         env:
-          PARSED_MESSAGES: ${{ toJson(join(COMMIT_MESSAGES)) }}
+          PARSED_MESSAGES: ${{ toJson(join($COMMIT_MESSAGES)) }}
       - name: check_for_skip
         env:
-          SKIP: ${{ contains(PARSED_MESSAGES, "#skip") }}
-      if: ${{ !SKIP }}
+          SKIP: ${{ contains($PARSED_MESSAGES, "#skip") }}
+        echo: "$SKIP"
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
@@ -80,11 +80,10 @@ jobs:
           COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
       - name: parse commit messages
         env:
-          PARSED_MESSAGES: ${{ toJson(join(COMMIT_MESSAGES)) }}
+          PARSED_MESSAGES: ${{ toJson(join($COMMIT_MESSAGES)) }}
       - name: check_for_skip
         env:
-          SKIP: ${{ contains(PARSED_MESSAGES, "#skip") }}
-      if: ${{ !SKIP }}
+          SKIP: ${{ contains($PARSED_MESSAGES, "#skip") }}
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         env: 
