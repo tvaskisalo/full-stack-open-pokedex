@@ -10,7 +10,14 @@ on:
   
 
 jobs:
-
+  check_skip:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: check_for_skip
+        env:
+          SKIP: ${{ contains(toJson(join(github.event.commits.*.message)), '#skip') }}
+        run: echo "$SKIP"
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
     steps:
@@ -33,22 +40,11 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
   heroku:
+    needs: [check_skip]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' || !contains(toJson(join(github.event.commits.*.message)), '#skip')}}
     steps:
       - uses: actions/checkout@v2
-      - name: commit messages
-        env:
-          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES"
-      - name: parse commit messages
-        env:
-          PARSED_MESSAGES: ${{ toJson(join(github.event.commits.*.message)) }}
-        run: echo "$PARSED_MESSAGES"
-      - name: check_for_skip
-        env:
-          SKIP: ${{ contains(toJson(join(github.event.commits.*.message)), '#skip') }}
-        run: echo "$SKIP"
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
@@ -58,25 +54,13 @@ jobs:
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
   tag_release:
-    needs: [heroku, simple_deployment_pipeline]
+    needs: [heroku, simple_deployment_pipeline, check_skip]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push'  || !contains(toJson(join(github.event.commits.*.message)), '#skip') }}
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
-      - name: commit messages
-        env:
-          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
-        run: echo "$COMMIT_MESSAGES"
-      - name: parse commit messages
-        env:
-          PARSED_MESSAGES: ${{ toJson(join(github.event.commits.*.message)) }}
-        run: echo "$PARSED_MESSAGES"
-      - name: check_for_skip
-        env:
-          SKIP: ${{ contains(toJson(join(github.event.commits.*.message)), '#skip') }}
-        run: echo "$SKIP"
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         env: 
