@@ -41,7 +41,7 @@ jobs:
         env:
           SKIP: ${{ contains(toJson(join(github.event.commits.*.message)), '#skip') }}
         run: echo "$SKIP"
-      if: ${{ $SKIP == false }}
+      if: $SKIP == false
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
@@ -62,7 +62,7 @@ jobs:
         env:
           SKIP: ${{ contains(toJson(join(github.event.commits.*.message)), '#skip') }}
         run: echo "$SKIP"
-      if: ${{ $SKIP == false }}
+      if: $SKIP == false
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         env: 
