@@ -53,6 +53,7 @@ jobs:
         env:
           SKIP: ${{ contains($PARSED_MESSAGES, "#skip") }}
         echo: "$SKIP"
+      if: ${{ $SKIP == false}}
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
@@ -69,7 +70,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
-            - name: gihub context
+      - name: gihub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
       - name: commits
@@ -84,6 +85,7 @@ jobs:
       - name: check_for_skip
         env:
           SKIP: ${{ contains($PARSED_MESSAGES, "#skip") }}
+      if: ${{ $SKIP == false}}
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@1.36.0
         env: 
