@@ -33,7 +33,7 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
   heroku:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: ${{ github.event_name == 'push' }}
     steps:
       - uses: actions/checkout@v2
@@ -53,8 +53,7 @@ jobs:
         env:
           SKIP: ${{ contains(PARSED_MESSAGES, "#skip") }}
       if: ${{ !SKIP }}
-      - name: push to heroku
-        uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: limitless-bayou-39628 #Must be unique in Heroku
