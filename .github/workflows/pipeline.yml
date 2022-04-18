@@ -10,14 +10,6 @@ on:
   
 
 jobs:
-  check_skip:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-      - name: check_for_skip
-        env:
-          SKIP: ${{ contains(toJson(join(github.event.commits.*.message)), '#skip') }}
-        run: echo "$SKIP"
   simple_deployment_pipeline:
     runs-on: ubuntu-20.04
     steps:
@@ -40,7 +32,6 @@ jobs:
           start: npm run start-prod
           wait-on: http://localhost:5000
   heroku:
-    needs: [check_skip]
     runs-on: ubuntu-20.04
     if: ${{ github.event_name == 'push' || !contains(toJson(join(github.event.commits.*.message)), '#skip')}}
     steps:
@@ -54,7 +45,7 @@ jobs:
           checkstring: "ok"
           rollbackonhealthcheckfailed: true
   tag_release:
-    needs: [heroku, simple_deployment_pipeline, check_skip]
+    needs: [heroku, simple_deployment_pipeline]
     runs-on: ubuntu-20.04
     if: ${{ github.event_name == 'push'  || !contains(toJson(join(github.event.commits.*.message)), '#skip') }}
     steps:
