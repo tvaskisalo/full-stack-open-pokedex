@@ -42,7 +42,7 @@ jobs:
   heroku:
     needs: [check_skip]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' && !$SKIP}}
+    if: ${{ github.event_name == 'push' || !contains(toJson(join(github.event.commits.*.message)), '#skip')}}
     steps:
       - uses: actions/checkout@v2
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
@@ -56,7 +56,7 @@ jobs:
   tag_release:
     needs: [heroku, simple_deployment_pipeline, check_skip]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push'  && !$SKIP }}
+    if: ${{ github.event_name == 'push'  || !contains(toJson(join(github.event.commits.*.message)), '#skip') }}
     steps:
       - uses: actions/checkout@v2
         with:
