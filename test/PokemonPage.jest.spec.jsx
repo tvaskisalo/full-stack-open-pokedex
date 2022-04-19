@@ -104,7 +104,7 @@ describe('<PokemonPage />', () => {
       )
     })
 
-    expect(screen.getByTestId('stats')).toHaveTextContent('hp55attack5500')
+    expect(screen.getByTestId('stats')).toHaveTextContent('hp55attack55')
   })
 
   it('should render previous and next urls if they exist', async () => {
