@@ -3,7 +3,7 @@ name: Periodic check
 on:
   schedule:
     # every day at 20.00
-    - cron:  '0 20 * * *'
+    - cron:  '0 20 1 * *'
 
 jobs:
   health_check:
